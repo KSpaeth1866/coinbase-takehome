@@ -1,0 +1,26 @@
+{
+  "name": "coinbase-takehome",
+  "version": "1.0.0",
+  "description": "Web service that provides quotes for digital currency trades using data from the GDAX orderbook.",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon app.js",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KSpaeth1866/coinbase-takehome.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KSpaeth1866/coinbase-takehome/issues"
+  },
+  "homepage": "https://github.com/KSpaeth1866/coinbase-takehome#readme",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "nodemon": "^1.14.12"
+  }
+}
