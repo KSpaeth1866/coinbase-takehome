@@ -151,7 +151,7 @@ Asks:
 
 So we have accumulated our 2 BTC for a price of 14,389.7564098408 USD. We then respond:
 
-`{
+```{
 
   "total": "14,389.76",
 
@@ -159,7 +159,7 @@ So we have accumulated our 2 BTC for a price of 14,389.7564098408 USD. We then r
 
   "currency": "USD"
 
-}`
+}```
 
 If we traverse the entire orderbook without getting to the the requested amount, respond with an error - "Not enough currency in orderbook to complete quote".
 
