@@ -16,7 +16,7 @@ getBidsOrAsks:
 walkThroughOrderbook:
   Walks through the orderbook and returns the total amount of base currency
   accumulated and the amount of equivalent quote currency per the orderbook
-  see Notes - Walking Through the Orderbook
+  see Notes - Walking Through the Orderbook in the ReadMe
 
 parsePriceAndAmount:
   Takes the priceSoFar and amountAccumulated from walking through the orderbook

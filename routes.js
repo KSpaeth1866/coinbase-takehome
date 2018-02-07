@@ -13,12 +13,10 @@ USE (error):
 
 ******************/
 
-// router setup
+// router and helper function setup
 const express = require('express');
 const router = express.Router();
-
 const axios = require('axios');
-
 const {
   getProductId,
   getBidsOrAsks,
@@ -26,60 +24,75 @@ const {
 } = require('./helperFunctions');
 
 router.post('/quote', async (req, res) => {
-
-  let base = req.body.base_currency.toUpperCase();
-  let quote = req.body.quote_currency.toUpperCase();
-  let action = req.body.action.toLowerCase();
-  let totalAmountNeeded = parseFloat(req.body.amount);
-
-  let productId = getProductId(base, quote);
-  let book;
-
   try {
+    // parse fields from json request
+    let base = req.body.base_currency.toUpperCase();
+    let quote = req.body.quote_currency.toUpperCase();
+    let action = req.body.action.toLowerCase();
+    let totalAmountNeeded = parseFloat(req.body.amount);
+
+    // amount needs to be a valid number
+    if (
+      req.body.amount !== parseFloat(req.body.amount).toString() ||
+      totalAmountNeeded <= 0
+    ) {
+      throw new Error("Invalid amount input")
+    }
+
+    // if action isn't buy or sell send back error
+    if (action !== 'buy' && action !== 'sell') {
+      throw new Error("Invalid action input");
+    }
+
+    // see notation in helperFunctions or Notes - Orderbook Matching in the ReadMe
+    let productId = getProductId(base, quote);
+    if (!productId) {
+      throw new Error("Invalid base/quote currency input");
+    }
+
+    // get orderbook from GDAX
     let response = await axios.get(`https://api-public.sandbox.gdax.com/products/${productId}/book?level=2`)
-    book = response.data;
+    let book = response.data;
+    if (!book) {
+      throw new Error("No orderbook found");
+    }
+
+    // see getBidsOrAsks in helperFunctions or Notes - Buying/Selling on the Orderbook in the ReadMe
+    let orders = getBidsOrAsks(base, action, productId, book)
+    if (orders.length === 0) {
+      throw new Error("Cannot complete quote, empty orderbook");
+    }
+
+    // see walkThroughOrderbook in helperFunctions or Notes - Walking Through the Orderbook
+    let {
+      priceSoFar,
+      amountAccumulated,
+    } = walkThroughOrderbook(orders, totalAmountNeeded, productId, base);
+
+    // if the orderbook can't complete the buy/sell, throw error
+    if (amountAccumulated < totalAmountNeeded) {
+      throw new Error("Not enough currency in orderbook to complete quote");
+    }
+    else {
+      // see parsePriceAndAmount in helperFunctions
+      let {
+        total,
+        price,
+      } = parsePriceAndAmount(priceSoFar, amountAccumulated, quote);
+      res.status(200).send({
+        sucess: true,
+        total,
+        price,
+        currency: quote,
+      })
+    }
   }
   catch (e) {
-    res.status(e.response.status).send({
+    res.status(400).send({
       success: false,
-      message: e.response.data.message,
       error: e.message,
     });
     return;
-  }
-
-  let orders = getBidsOrAsks(base, action, productId, book)
-
-  if (orders.length === 0) {
-    res.status(404).send({
-      success: false,
-      message: "Cannot complete quote, empty orderbook"
-    })
-    return;
-  }
-
-  let {
-    priceSoFar,
-    amountAccumulated,
-  } = walkThroughOrderbook(orders, totalAmountNeeded, productId, base);
-
-  if (amountAccumulated < totalAmountNeeded) {
-    res.status(400).send({
-      success: false,
-      message: "Not enough currency in orderbook to complete quote",
-    })
-  }
-  else {
-    let {
-      total,
-      price,
-    } = parsePriceAndAmount(priceSoFar, amountAccumulated, quote);
-    res.status(200).send({
-      sucess: true,
-      total,
-      price,
-      currency: quote,
-    })
   }
 })
 

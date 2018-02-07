@@ -1,8 +1,8 @@
-/*
+/******************
 
 Express server, using bodyparser to read req.body.base_currency, etc
 
-*/
+******************/
 
 // router setup
 const express = require('express');
