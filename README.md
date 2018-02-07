@@ -14,6 +14,7 @@ In the command line:
 
 Then submit a POST request to http://localhost:3000/quote with the request fields as described by the Service Specification
 1. With Postman:
+    1. Set the Request URL to POST at http://localhost:3000/quote
     1. Set the Header `key: value` to `Content-Type: application/json`
     1. The body should be raw JSON
 1. With command line/curl:
