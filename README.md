@@ -37,7 +37,7 @@ The web service has only one endpoint that receives JSON requests and responds w
 
 The service should be able to quote trades between any two currencies that GDAX has an orderbook for. It should also be able to support trades where the base and quote currencies are the inverse of a GDAX trading pair. For example, the service should be able to quote a buy of BTC (base currency) using ETH (quote currency), even though the GDAX orderbook is ETH-BTC.
 
-The service uses the GET `https://api-public.sandbox.gdax.com/products/<product-id>/book endpoint`.
+The service uses the GET `https://api-public.sandbox.gdax.com/products/<product-id>/book endpoint` to retrieve the orderbook.
 
 ## Notes
 
@@ -77,7 +77,7 @@ As noted in the specs, we should be able to quote a buy of BTC (base currency) u
 
 One method of dealing with this could be passing the base_currency and quote_currency into a helper function that would output the correct product id, if one exists. Another could be trying to send two GET requests to `https://api-public.sandbox.gdax.com/products/<product-id>/book?level=2`, using `base-quote` and `quote-base` as `<product-id>`, and returning the successful response if available.
 
-For example, if we are passed USD as base and BTC as quote, the first solution would parse the base and quote into `BTC-USD` as the product id, which is faster as it only has a single GET request to the GDAX server. However, the first solution is less scalable without maintenance as if time a product id changed (i.e. `BTC-USD` => `USD-BTC`) or a new one is added (i.e. `ETH-GBP`) this function would need to be updated, otherwise the service would not respond correctly. The second, however, would still get the correct/new orderbook, although it would be slower as it might require two requests. A combination that parses through the set product matching then tries both combinations if that fails would benefit from the speed of knowing the product ids while being more robust in the long term.
+For example, if we are passed USD as base and BTC as quote, the first solution would parse the base and quote into `BTC-USD` as the product id, which is faster as it only has a single GET request to the GDAX server. However, the first solution is less scalable without maintenance as if a product id is changed (i.e. `BTC-USD` => `USD-BTC`) or a new one is added (i.e. `ETH-GBP`) this function would need to be updated, otherwise the service would not respond correctly. The second, however, would still get the correct/new orderbook, although it would be slower as it might require two requests. A combination that parses through the set product matching then tries both combinations if that fails would benefit from the speed of knowing the product ids in advance while being more robust in the long term.
 
 For the purposes of this exercise I chose to simply parse the inputs per the product-ids above to keep it more simple.
 
@@ -87,11 +87,14 @@ The orderbook has a list of bids (offers to buy) and asks (offers to sell), whic
 
 > The size field is the sum of the size of the orders at that price, and num-orders is the count of orders at that price; size should not be multiplied by num-orders.
 
-For example, an ask order of `[8500, 0.5347346, 1]` in the BTC-USD orderbook means there is a price bucket of $8,500 USD and there are 0.5347346 BTC available for purchase at that price. If orderbook had `[8500, 0.5347346, 1], [8550, 0.4652654, 1]` and we wanted to buy 1 BTC, we would need to spend (8,500 USD/BTC * 0.5347346 BTC) + (8550 USD/BTC * 0.4652654 BTC) = $8,523.26 USD for that 1 BTC. In general, as we walk through, we check if the current order is sufficient to fill our quote. If it is, take all we need. If not, take it all, add it to the amount of base acquired so far in the walk, and add the price of that order to the current value accumulated so far. For example see below:
+For example, an ask order of `[8500, 0.5347346, 1]` in the BTC-USD orderbook means there is a price bucket of $8,500 USD and there are 0.5347346 BTC available for purchase at that price.
+
+If orderbook were `[[8500, 0.5347346, 1], [8550, 0.4652654, 1]]` and we wanted to buy 1 BTC, we would need to spend (8,500 USD/BTC * 0.5347346 BTC) + (8550 USD/BTC * 0.4652654 BTC) = $8,523.26 USD for that 1 BTC. In general, as we walk through, we check if the current order is sufficient to fill our quote. If it is, take all we need. If not, take it all, add it to the amount of base acquired so far in the walk, and add the price of that order to the current value accumulated so far. For example see below:
 
 Request:
 
-{
+`{
+
 	"action": "buy",
 
 	"base_currency": "BTC",
@@ -100,11 +103,11 @@ Request:
 
 	"amount": "2"
 
-}
+}`
 
 Asks:
 
-[
+`[
 
   [ '7194', '1.70675943', 2 ],
 
@@ -118,7 +121,7 @@ Asks:
 
   ...
 
-]
+]`
 
 1. Round 0
     1. Amount Accumulated: `0`
@@ -148,7 +151,7 @@ Asks:
 
 So we have accumulated our 2 BTC for a price of 14,389.7564098408 USD. We then respond:
 
-{
+`{
 
   "total": "14,389.76",
 
@@ -156,7 +159,7 @@ So we have accumulated our 2 BTC for a price of 14,389.7564098408 USD. We then r
 
   "currency": "USD"
 
-}
+}`
 
 If we traverse the entire orderbook without getting to the the requested amount, respond with an error - "Not enough currency in orderbook to complete quote".
 
