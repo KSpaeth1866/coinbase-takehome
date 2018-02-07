@@ -16,7 +16,8 @@ USE (error):
 // router and helper function setup
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
+const Gdax = require('gdax');
+const publicClient = new Gdax.PublicClient();
 const {
   getProductId,
   getBidsOrAsks,
@@ -51,8 +52,7 @@ router.post('/quote', async (req, res) => {
     }
 
     // get orderbook from GDAX
-    let response = await axios.get(`https://api-public.sandbox.gdax.com/products/${productId}/book?level=2`)
-    let book = response.data;
+    let book = await publicClient.getProductOrderBook(productId, {level: 2});
     if (!book) {
       throw new Error("No orderbook found");
     }
@@ -79,6 +79,7 @@ router.post('/quote', async (req, res) => {
         total,
         price,
       } = parsePriceAndAmount(priceSoFar, amountAccumulated, quote);
+
       res.status(200).send({
         sucess: true,
         total,
