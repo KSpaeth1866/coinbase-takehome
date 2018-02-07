@@ -95,10 +95,10 @@ Request:
 
 ```
 {
-	"action": "buy",
-	"base_currency": "BTC",
-	"quote_currency": "USD",
-	"amount": "2"
+  "action": "buy",
+  "base_currency": "BTC",
+  "quote_currency": "USD",
+  "amount": "2"
 }
 ```
 
