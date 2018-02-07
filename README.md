@@ -153,7 +153,9 @@ So we have accumulated our 2 BTC for a price of 14,389.7564098408 USD. We then r
 
 `{
   "total": "14,389.76",
+
   "price": 14,389.7564098408/2 = "7,194.88",
+
   "currency": "USD"
 }`
 
