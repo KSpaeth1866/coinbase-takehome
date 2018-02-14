@@ -87,7 +87,6 @@ walkThroughOrderbook = (orders, totalAmountNeeded, productId, base) => {
   let index = 0;
   let amountAccumulated = 0;
   let priceSoFar = 0;
-  console.log(orders);
 
   while (amountAccumulated < totalAmountNeeded && index < orders.length) {
 

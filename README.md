@@ -5,6 +5,10 @@ Create a web service that provides quotes for digital currency trades using data
 
 ## Instructions to Run
 
+If downloading a zipped file:
+1. Download and unzip the zip
+1. Navigate to the zip file in the command line
+
 In the command line:
 1. Run `git clone https://github.com/KSpaeth1866/coinbase-takehome.git`
 1. Run `npm install`
@@ -18,7 +22,7 @@ Then submit a POST request to http://localhost:3000/quote with the request field
     1. Set the Header `key: value` to `Content-Type: application/json`
     1. The body should be raw JSON
 1. With command line/curl:
-    1. `curl -X POST http://localhost:3000/quote --data '{“action”: “buy”, “base_currency”: “BTC”, “quote_currency”: “USD”, “amount”: “1.00000000”}' -H 'Content-Type: application/json'` replacing with whichever values you choose to test
+    1. `curl -X POST http://localhost:3000/quote --data '{“action”: “buy”, “base_currency”: “BTC”, “quote_currency”: “USD”, “amount”: “1”}' -H 'Content-Type: application/json'` replacing with whichever values you choose to test
 
 ## Service Specification
 The web service has only one endpoint that receives JSON requests and responds with JSON. If there are any errors processing the request, it responds with a JSON object including an error message.

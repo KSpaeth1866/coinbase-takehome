@@ -34,7 +34,8 @@ router.post('/quote', async (req, res) => {
 
     // amount needs to be a valid number
     if (
-      req.body.amount !== parseFloat(req.body.amount).toString() ||
+      typeof(parseFloat(req.body.amount)) != "number" ||
+      isNaN(parseFloat(req.body.amount).toString()) ||
       totalAmountNeeded <= 0
     ) {
       throw new Error("Invalid amount input")
