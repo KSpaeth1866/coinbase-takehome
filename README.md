@@ -9,8 +9,10 @@ If downloading a zipped file:
 1. Download and unzip the zip
 1. Navigate to the zip file in the command line
 
-In the command line:
+If from Git:
 1. Run `git clone https://github.com/KSpaeth1866/coinbase-takehome.git`
+
+In the command line:
 1. Run `npm install`
 1. Run `npm start`
     1. This will start the server on http://localhost:3000/ unless you change `process.env.port` from 3000
