@@ -6,10 +6,11 @@ Create a web service that provides quotes for digital currency trades using data
 ## Instructions to Run
 
 If downloading a zipped file:
-1. Download and unzip the zip
-1. Navigate to the zip file in the command line
+1. Download and unzip the zip file
+1. Navigate to the appropriate folder in the command line
 
 If from Git:
+1. Navigate to where you want the project in the command line
 1. Run `git clone https://github.com/KSpaeth1866/coinbase-takehome.git`
 
 In the command line:
